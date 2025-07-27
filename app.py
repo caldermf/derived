@@ -209,7 +209,9 @@ if mode == "Chain complexes":
             for i in range(length):
                 # Calculate mathematical degree: array position i corresponds to degree (length - 1 - i)
                 # But for cohomology, we want to display increasing degrees from left to right
-                cohom_degree = i - length + 1  # This gives us the cohomological degree
+                # Get the current shift value for this complex
+                current_shift = st.session_state.get(f'shift_{complex_idx}', 0)
+                cohom_degree = i - length + 1 + current_shift  # This gives us the cohomological degree with shift
                 r = st.number_input(f"Rank of $C^{{{cohom_degree}}}$", min_value=1, max_value=6, value=2, step=1, key=f"rank_{complex_idx}_{i}")
                 module_ranks.append(r)
 
@@ -220,10 +222,13 @@ if mode == "Chain complexes":
                 rows = module_ranks[i]
                 cols = module_ranks[i - 1]
                 
-                # Calculate the cohomological degree for this differential
+                # Calculate the cohomological degree for this differential, including shift
+                # Get the current shift value for this complex
+                current_shift = st.session_state.get(f'shift_{complex_idx}', 0)
+                
                 # Array position i-1 corresponds to the source degree, i to target degree
-                source_cohom_degree = (i - 1) - length + 1  # Source degree in cohomological notation
-                target_cohom_degree = i - length + 1        # Target degree in cohomological notation
+                source_cohom_degree = (i - 1) - length + 1 + current_shift  # Source degree with shift
+                target_cohom_degree = i - length + 1 + current_shift        # Target degree with shift
                 st.write(f"Matrix $d^{{{source_cohom_degree}}}$: $C^{{{source_cohom_degree}}} \\to C^{{{target_cohom_degree}}}$ ({rows}×{cols})")
                 mat = create_matrix_input_grid(rows, cols, f"d{complex_idx}_{i}")
                 differentials.append(mat)
